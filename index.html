@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT PT2</title>
+    <link rel="icon" href="carro.jpg" type="image/x-icon">
+    <title>ChatCar</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,40 +15,52 @@
         <label for="resposta">Resposta IA</label>
         <textarea cols="40" rows="10" name="resposta" id="resposta" readonly></textarea>
         
-        <input type="button" value="Enviar" onclick="run()">
+        <input type="button" value="Enviar" id="send-button">
     </div>
 
-    <body>
-      <script type="importmap">
-          {
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2024 ChatCar. Todos os direitos reservados.</p>
+            <ul>
+                <li>Arthur Conde Ferri</li>
+                <li>condeferriarthur@gmail.com</li>
+                <li>IFPR</li>
+            </ul>
+        </div>
+    </footer>
+
+    <script type="importmap">
+        {
             "imports": {
-              "@google/generative-ai": "https://esm.run/@google/generative-ai"
+                "@google/generative-ai": "https://esm.run/@google/generative-ai"
             }
-          }
-        </script>
-      <script type="module">
+        }
+    </script>
+    <script type="module">
         import { GoogleGenerativeAI } from "@google/generative-ai";
   
-        // Fetch your API_KEY
         const API_KEY = "AIzaSyB-BZicHWUgPzWriX8DhEf4Ap4x6lrNB3o";
   
-        // Access your API key (see "Set up your API key" above)
         const genAI = new GoogleGenerativeAI(API_KEY);
-  
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
-  
+        const model = genAI.getGenerativeModel({ model: "text-bison-001" });
+
         async function run() {
-           const prompt = "Gemini, Você é um vendedor de carros de alta performance, e fala somente sobre esse assunto"
-  
-           const result = await model.generateContent(prompt);
-           const response = await result.response;
-           const text = response.text();
-  
-    document.getElementById("resposta").value = text;
-    console.log(text);
-  }
-  run();
+            const promptText = document.getElementById('prompt').value;
+
+            try {
+                const result = await model.generateText({ prompt: promptText });
+                const text = result.candidates[0].output; // Supondo que a estrutura de resposta seja esta
+                
+                document.getElementById("resposta").value = text;
+                console.log(text);
+            } catch (error) {
+                console.error("Erro ao gerar conteúdo:", error);
+                document.getElementById("resposta").value = "Erro ao gerar resposta. Tente novamente.";
+            }
+        }
+
+        // Vincular a função run ao clique do botão
+        document.getElementById('send-button').onclick = run;
     </script>
-    
-  </body>
-  </html>
+</body>
+</html>
