@@ -6,6 +6,7 @@
     <link rel="icon" href="carro.jpg" type="image/x-icon">
     <title>ChatCar</title>
     <link rel="stylesheet" href="style.css">
+    
 </head>
 <body>
     <div class="container">
@@ -68,6 +69,7 @@
             novaDiv.className = "user-message";
             novaDiv.textContent = mensagem;
             document.getElementById("chat-log").appendChild(novaDiv);
+            document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
         }
 
         function adicionarMensagemBot(mensagem) {

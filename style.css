@@ -176,3 +176,30 @@ footer ul li {
         height: 200px;
     }
 }
+
+
+.chat-log {
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif; /* Fonte mais simples */
+    font-size: 14px; /* Tamanho de fonte menor */
+}
+.user-message, .bot-message {
+    padding: 8px; /* Menos padding */
+    margin: 5px 0;
+    border-radius: 4px; /* Bordas levemente arredondadas */
+}
+.user-message {
+    background-color: #d1ecf1; /* Cor de fundo para mensagens do usuário */
+    text-align: right;
+}
+.bot-message {
+    background-color: #f8d7da; /* Cor de fundo para mensagens do bot */
+}
+footer {
+    margin-top: 20px;
+    text-align: center;
+}
