@@ -10,12 +10,11 @@
 <body>
     <div class="container">
         <label for="prompt">Insira seu prompt</label>
-        <textarea cols="40" rows="10" name="prompt" id="prompt"></textarea>
+        <textarea cols="40" rows="5" name="prompt" id="prompt"></textarea>
         
-        <label for="resposta">Resposta IA</label>
-        <textarea cols="40" rows="10" name="resposta" id="resposta" readonly></textarea>
-        
-        <input type="button" value="Enviar" id="send-button">
+        <div id="chat-log" class="chat-log"></div>
+
+        <button id="send-btn">Enviar</button>
     </div>
 
     <footer>
@@ -29,38 +28,64 @@
         </div>
     </footer>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "@google/generative-ai": "https://esm.run/@google/generative-ai"
-            }
-        }
-    </script>
     <script type="module">
-        import { GoogleGenerativeAI } from "@google/generative-ai";
-  
+        // Carregue o pacote via CDN
+        import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai";
+
+        // Chave de API (lembre-se de mantê-la privada em produção)
         const API_KEY = "AIzaSyB-BZicHWUgPzWriX8DhEf4Ap4x6lrNB3o";
-  
+
+        // Instanciar a API
         const genAI = new GoogleGenerativeAI(API_KEY);
-        const model = genAI.getGenerativeModel({ model: "text-bison-001" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-        async function run() {
-            const promptText = document.getElementById('prompt').value;
+        const historicoConversa = [];
 
+        async function obterRespostaDoBot(mensagemUsuario) {
             try {
-                const result = await model.generateText({ prompt: promptText });
-                const text = result.candidates[0].output; // Supondo que a estrutura de resposta seja esta
-                
-                document.getElementById("resposta").value = text;
-                console.log(text);
+                historicoConversa.push({ role: "user", content: mensagemUsuario });
+
+                const historicoLimitado = historicoConversa.slice(-3);
+                const contexto = historicoLimitado.map(item => `${item.role}: ${item.content}`).join('\n');
+
+                const prompt = `Fale sobre assuntos do mundo automotivo e de carros, e você odeia carros elétricos, e quando o assunto for carro elétrico seja o mais grosso possível: \n${contexto}`;
+
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const text = await response.text();
+
+                historicoConversa.push({ role: "bot", content: text });
+
+                adicionarMensagemBot(text);
             } catch (error) {
-                console.error("Erro ao gerar conteúdo:", error);
-                document.getElementById("resposta").value = "Erro ao gerar resposta. Tente novamente.";
+                console.error("Erro ao obter resposta do bot:", error);
+                adicionarMensagemBot("Erro ao responder. Tente novamente.");
             }
         }
 
-        // Vincular a função run ao clique do botão
-        document.getElementById('send-button').onclick = run;
+        function adicionarMensagemUsuario(mensagem) {
+            const novaDiv = document.createElement("div");
+            novaDiv.className = "user-message";
+            novaDiv.textContent = mensagem;
+            document.getElementById("chat-log").appendChild(novaDiv);
+        }
+
+        function adicionarMensagemBot(mensagem) {
+            const novaDiv = document.createElement("div");
+            novaDiv.className = "bot-message";
+            novaDiv.textContent = mensagem;
+            document.getElementById("chat-log").appendChild(novaDiv);
+            document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
+        }
+
+        document.getElementById("send-btn").addEventListener("click", () => {
+            const userInput = document.getElementById("prompt").value;
+            if (userInput.trim() !== "") {
+                adicionarMensagemUsuario(userInput);
+                obterRespostaDoBot(userInput);
+                document.getElementById("prompt").value = "";
+            }
+        });
     </script>
 </body>
 </html>
