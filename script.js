@@ -35,6 +35,3 @@ const API_KEY = "AIzaSyB-BZicHWUgPzWriX8DhEf4Ap4x6lrNB3o"; // Sua chave de API v
                 document.getElementById('resposta').value = "Erro ao gerar resposta. Tente novamente.";
             }
         }
-
-        // Exponha a função run no escopo global
-        window.run = run;
